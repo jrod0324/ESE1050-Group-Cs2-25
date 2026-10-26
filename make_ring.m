@@ -1,12 +1,10 @@
 function [G_ring] = make_ring(n,k)
-%UNTITLED5 Summary of this function goes here
-%   Detailed explanation goes here
+
 
 if k < 1 || k > n/2
     return
 end
 
-abs(eye(n) - ones(n))
 G_ring = zeros(n);
 
 e_j = zeros(n,1);
