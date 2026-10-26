@@ -21,14 +21,3 @@ for k = 1:n
     end
     R = double(A * R > 0);   
 end
-
-
-
-
-
-
-
-
-
-
- 
