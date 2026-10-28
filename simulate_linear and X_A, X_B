@@ -18,8 +18,8 @@ D = diag(d);
 L = D - G;
 I = eye(n);
 
-WA = diag(1./(I+D)) * (I+G);
-e = 1/(max(D));
+WA = diag(1./(1+D)) * (I+G);
+e = 1/(max(d));
 WB = I - e*L;
 
 XA = simulate_linear(WA, x0, K);
