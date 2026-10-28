@@ -1,0 +1,26 @@
+function X = simulate_linear(W, x0, K)
+
+
+X = zeros(length(x0), K+1); % X dimensions
+X(:,1) = x0; % First col of X is x0
+% setting the next columns of X through the matrix vector product
+for k = 1:K
+    X(:,k+1) = W * X(:,k);
+end
+
+% checks last column of X is correct
+if norm(X(: , end) - W^K * x0) > 0
+    error('Error');
+end
+end
+
+D = diag(d);
+L = D - G;
+I = eye(n);
+
+WA = diag(1./(I+D)) * (I+G);
+e = 1/(max(D));
+WB = I - e*L;
+
+XA = simulate_linear(WA, x0, K);
+XB = simulate_linear(WB, x0, K);
