@@ -1,0 +1,62 @@
+function J = score_mission(D, S)
+m = 4;                  % num leaders
+T = 125;                % num steps
+n = size(D.G, 1);       % number of robots
+g = D.g;                % rally point
+
+%leader set check
+if length(S) > m
+    error('Too many leaders');
+end
+for i = 1:length(S)
+    for j = 1:length(D.faulty)
+        if S(i) == D.faulty(j)
+            error('A leader is faulty');
+        end
+    end
+    for j = i+1:length(S)
+        if S(i) == S(j)
+            error('Leader repitition');
+        end
+    end
+end
+
+
+working = ones(n,1);
+working(D.faulty) = 0;
+
+% Setup
+n = size(D.G,1);
+d = (D.G)*ones(n,1);
+W = diag(1./(1+d)) * (eye(n) + D.G);
+x0 = D.P0(:,1);
+y0 = D.P0(:,2);
+
+% No leaders test, establish e_base for cost calculation
+lam = ones(n,1);        % followers
+lam(D.faulty) = 0;      % faulty robots don't move
+a = x0;                 
+b = y0;
+X = simulate_anchored(W, lam, a, x0, T);
+Y = simulate_anchored(W, lam, b, y0, T);
+e_base = zeros(1,T);
+for k = 1:T
+    dist2 = (X(:,k+1) - g(1)).^2 + (Y(:,k+1) - g(2)).^2;  % euclidian distance of robots
+    e_base(k) = sum(working .* dist2) / sum(working);      
+end
+
+% With leaders
+lam(S) = 0.5;           % leaders
+a(S) = g(1);            % leaders anchored at g
+b(S) = g(2);
+X = simulate_anchored(W, lam, a, x0, T);
+Y = simulate_anchored(W, lam, b, y0, T);
+e_new = zeros(1,T);
+for k = 1:T
+    dist2 = (X(:,k+1) - g(1)).^2 + (Y(:,k+1) - g(2)).^2;
+    e_new(k) = sum(working .* dist2) / sum(working);
+end
+
+% Score
+J = (100/T) * sum(1 - e_new ./ e_base);
+end
