@@ -180,6 +180,29 @@ W = eye(n) - (1/max(d)) * L;
 end
 
 % C.1 Simulator
+
+% C1 Experiment estimates: 
+
+% Estimate T1: Since we are removing the whole sets average using the
+% broadcast technique should drop off quickly to zero and then become
+% constant
+
+% Estimate T2: Again all of the robots are able to communicate, but
+% communication has to go through more channels, which means it will
+% converge to zero quickly but not as quickly as T1
+
+% Estimate T3: First case where all robots are not able to hear each other,
+% only their k nearest neighbors. As all the robots become closer, they
+% will gain more and more neighbors and the value will again converge to
+% zero semi quickly, slower than the first two cases.
+
+% Estimate T4 r min: This is the best case scenario, should del(k) should
+% seem to decrease linearly when shown on a log scale graph
+
+% Estimate T4 r min +0.4 : This should show similar behavior to r min, with
+% a slightly different intercept
+% 
+
 function X = simulate_linear(W, x0, K)
 X = zeros(length(x0), K+1);
 X(:,1) = x0;
@@ -191,7 +214,71 @@ if norm(X(:,end) - W^K*x0) > 1e-8 * norm(x0)
 end
 end
 
+
+% C1 Experiment Results: 
+
+% T1: The prediction for T1 is correct. All robots are able to see the
+% average and should move to the average in one step with del(k) being zero
+% with some error, which is exactly what happened. The gap between the two
+% zones has little effect
+
+% T2: The star method also converged to the average very quickly but
+% slightly slower than T1 as predicted. In the space that the star
+% algorithm builds, each robot should be no more than 2 communications away
+% from the next. For every step, the stars will become move halfway towards
+% the center and become more connected. With this specific outline, a
+% specific robots number of links does not matter, it is the spread of info
+% across the hub that determines convergence speed. Again the gap between
+% zones has little effect
+
+% T3: The logic for T3 was slightly incorrect. Each robot is only allowed
+% to 2k neighbors, so information is spread slower with each time step
+% which means more steps are needed to converge. Additionally, each of
+% these steps is a local average so it takes more time for robots on
+% opposite sides of the setup to communicate with each other on movements.
+% Again, the gap between zones has little effect on the final result
+
+% T4 r min: This is the slowest convergence rate even though it has the
+% same amount of edges as a ring. This is mainly because only a handful of
+% rings cross the gap, which creates a bottleneck in information. I was
+% correct that it would be slightly slower than using a larger radius value
+
+%T4 r min +0.4 : I was slightly wrong on this front because the larger
+%radius creates more links for information to travel across different
+%zones, so it does not exhibit the same slow convergence as the other T4
+%case
+
 % C.2 Spread and rendezvous time
+
+% Rendezvous point for each protocol: PA creates a weighted sum, so the
+% swarms meets at the calculated degree weighted average of starting
+% positions, with weight being based on d_i for each robot i. In contrast,
+% protocol uses the ones vector which creates an ordinary average of
+% initial positions. In only part A, robots with more neighbors will have
+% more influence on where the swarm converges to.
+
+% Predicted vs simulated meeting points are shown in command windows output
+
+% Star average meeting point: Protocol will meet at the average exactly,
+% because it is just a plain sum
+
+% Protocol A has the hub(lead robot) has the most weight(1+99) while all
+% other robots have weight(1+1 = 2). With 100 robots the hub carries around
+% 33% of total weight and each leaf only carries 0.66%. This means the
+% meeting point is pulled 33% of the way towards the initial robot. So you
+% can use the initial robots place and the average vector to find the
+% actual conversion point for Protocol A
+
+% Protocol reaches a meeting point in 7 steps while protocol B takes 450
+% steps. A is much faster because each leaf only has one neighbor(the
+% initial robot) and moves to a midpoint between that and its initial
+% position. This is able to average all positions with 1 step. Meanwhile
+% with the total average, the total distance covered by one robot towards
+% the hub is 1/99, for the 99 non leading robots. This smaller distance
+% covered per step helps to create the difference in convergence speeds
+% between the two protocols
+
+
 function [delta, k_eps] = spread(X, Y)
 n = size(X,1);
 C = eye(n) - ones(n)/n;
@@ -201,6 +288,10 @@ for k = 1:size(X,2)
 end
 k_eps = find(delta <= 0.01*delta(1), 1) - 1;
 end
+
+
+
+
 
 
 
