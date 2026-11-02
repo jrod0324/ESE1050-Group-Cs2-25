@@ -376,7 +376,7 @@ n = size(G, 1);
 degrees = (G*ones(n,1));
 degrees(faulty) = -1;
 
-distances = vecnorm(P0 - g(:), 2,2);
+distances = vecnorm(P0 - g(:)', 2,2);
 robots = [distances,degrees]; 
 [~,indices] = sortrows(robots,[2,1], {'descend','ascend'});
 orderedIndices = indices(1:m);
