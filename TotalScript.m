@@ -334,7 +334,7 @@ function S = choose_leaders(G, P0, faulty, g, m)
 %   Members: <Rohan, Jordan, Siddarth>
 %
 %   Strategy (2-3 sentences describing your rule, in words):
-%   Want leaders that are the closest to the rally point, that way their
+%   We want leaders that are the closest to the rally point, that way their
 %   weights influence the follower robots to move more towards g. However,
 %   we also want leaders to be ones with a lot of degrees, that way they
 %   have more robots in their vicinity that can communicate and follow
@@ -345,9 +345,6 @@ function S = choose_leaders(G, P0, faulty, g, m)
 n = size(G, 1);
 working = true(n, 1);
 working(faulty) = false;
-
-% ---- replace this placeholder with your strategy ----
-
 
 k = false;
 while (k == false)
