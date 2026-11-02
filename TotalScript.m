@@ -117,8 +117,10 @@ xs = steady_state(W, lam, x0);
 ys = steady_state(W, lam, y0);
 X  = simulate_anchored(W, lam, x0, x0, 5000);
 Y  = simulate_anchored(W, lam, y0, y0, 5000);
-err = max(norm(xs - X(:,end)), norm(ys - Y(:,end)));
-fprintf(mean(xs), mean(ys), g(1), g(2))
+err_x = max(norm(xs - X(:,end))
+err_y = norm(ys - Y(:,end)))
+swarm_end = [mean(xs), mean(xy)]
+g_final = g';
 
 %% ================= Functions (must be at the end) =================
 % T1 Broadcast (complete)
