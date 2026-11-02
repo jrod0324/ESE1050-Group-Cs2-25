@@ -2,13 +2,22 @@ function export_for_viewer(D, leaders, filename)
 %EXPORT_FOR_VIEWER  Save a deployment and leader choices for the Swarm Rally Race web viewer.
 %
 %   export_for_viewer(D, S, filename)
-%       D         a deployment from make_deployment
-%       S         your leader indices (a vector), OR a struct array with
-%                 fields 'name' and 'S' to compare several strategies, e.g.
-%                     L(1).name = 'Mine';           L(1).S = choose_leaders(D.G, D.P0, D.faulty, D.g, 4);
-%                     L(2).name = 'Highest degree'; L(2).S = my_degree_rule(D.G, D.P0, D.faulty, D.g, 4);
-%                     export_for_viewer(D, L, 'seed7.json')
-%       filename  name of the .json file to write (default 'swarm.json')
+m = 4;
+seed = 7;                        
+D = make_deployment(seed);
+L(1).name = 'Rohan_Jordan_Siddharth Strategy';
+L(1).S    = choose_leaders(D.G, D.P0, D.faulty, D.g, m);
+
+L(2).name = 'Random';
+L(2).S    = leaders_random(D.G, D.P0, D.faulty, D.g, m);
+
+L(3).name = 'Highest degree';
+L(3).S    = leaders_degree(D.G, D.P0, D.faulty, D.g, m);
+
+L(4).name = 'Closest to g';
+L(4).S    = leaders_closest(D.G, D.P0, D.faulty, D.g, m);
+
+export_for_viewer(D, L, ['seed' num2str(seed) '.json'])
 %
 %   Then open the viewer page and load the file. The page re-runs the
 %   Part III model (lambda = 0.5 for leaders, T = 150) and shows each
