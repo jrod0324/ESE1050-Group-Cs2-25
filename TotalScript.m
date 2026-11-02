@@ -297,7 +297,6 @@ greekA = diag(lambda);
 X2 = zeros(length(x0), K+1);
 X2(:, 1) = x0;
 
-%checking satisfy steady state equilibrium
 for i = 1:K
     X2(:,i+1) = (greekA*W*X2(:,i)) + (eye(length(x0)) - greekA)*a;
 end
