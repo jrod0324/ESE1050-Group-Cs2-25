@@ -1,8 +1,8 @@
 clear; clc; close all
-m = 4;      % number of leaders
-N = 7;     % number of practice deployments
+m = 4;     
+N = 7;    
 
-%% Score the three strategies
+
 scores = zeros(N, 3);  
 for seed = 1:N
     D = make_deployment(seed);
@@ -14,15 +14,12 @@ for seed = 1:N
     scores(seed,3) = score_mission(D, S3);
 end
 
-%% Plot scores
 figure
 plot(1:N, scores, 'o-')
 xlabel('deployment seed'); ylabel('Score J (%)')
 
 title('Simple strategies on 20 practice deployments')
 
-
-%% ================= Functions =================
 % S1: random working
 function S = leaders_random(G, P0, faulty, g, m)
 n = size(G,1);
