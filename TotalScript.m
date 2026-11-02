@@ -123,10 +123,17 @@ err_y = norm(ys - Y(:,end))
 swarm_end = [mean(xs), mean(ys)]
 g_final = g'
 
-m = 4;     
-N = 7;    
+%Every follower sits at the average of its neighboring robots, 
+%and between the smallest and largest faulty landing positions. 
+%Because of how the lambda weighting causes the types of robots to move, 
+%a following robot near a faulty robot will end up closer to it
+%after the next cycle. 
 
 % D5 Testing
+
+m = 4;
+N = 7;
+
 scores = zeros(N, 3);  
 for seed = 1:N
     D = make_deployment(seed);
