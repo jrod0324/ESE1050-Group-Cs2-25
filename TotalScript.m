@@ -307,7 +307,7 @@ end
 function S = choose_leaders(G, P0, faulty, g, m)
 
 %   Strategy (2-3 sentences describing your rule, in words):
-%   Want leaders that are the closest to the rally point, that way their
+%   We want leaders that are the closest to the rally point, that way their
 %   weights influence the follower robots to move more towards g. However,
 %   we also want leaders to be ones with a lot of degrees, that way they
 %   have more robots in their vicinity that can communicate and follow
@@ -319,15 +319,14 @@ n = size(G, 1);
 working = true(n, 1);
 working(faulty) = false;
 
-% Checks if any of the m coordinate pairs have a faulty robot in them. If
-% so, the program runs the function until all of the m pairs are not faulty.
-
-S = sortingCheck(G,P0,g,m);
+S = sortingCheck(G,P0,g,m,faulty);
 
 % Calculates the number of degrees and distance to the rally point for each
-% robot, return a list of m coordinate pairs that represent the leaders
+% robot, return a list of m coordinate pairs that represent the leaders.
+% Checks faulty indices by setting their degree values to -1, therefore
+% they will never be called. 
 
-function[orderedIndices] = sortingCheck(G,P0,g,m)
+function[orderedIndices] = sortingCheck(G,P0,g,m,faulty)
 n = size(G, 1);
 degrees = (G*ones(n,1));
 degrees(faulty) = -1;
@@ -337,8 +336,8 @@ robots = [distances,degrees];
 [~,indices] = sortrows(robots,[2,1], {'descend','ascend'});
 orderedIndices = indices(1:m);
 
-end 
-
+end
+end
 
 % D3: Scoring
 function J = score_mission(D, S)
