@@ -112,15 +112,38 @@ n  = size(D.G,1);  d = D.G*ones(n,1);
 W  = diag(1./(1+d))*(eye(n)+D.G);
 x0 = D.P0(:,1);  y0 = D.P0(:,2);  g = D.g(:);
 
-lam = ones(n,1);  lam(D.faulty) = 0;
+lam = ones(n,1);
+lam(D.faulty) = 0;
 xs = steady_state(W, lam, x0);
 ys = steady_state(W, lam, y0);
 X  = simulate_anchored(W, lam, x0, x0, 5000);
 Y  = simulate_anchored(W, lam, y0, y0, 5000);
-err_x = max(norm(xs - X(:,end))
-err_y = norm(ys - Y(:,end)))
-swarm_end = [mean(xs), mean(xy)]
-g_final = g';
+err_x = norm(xs - X(:,end))
+err_y = norm(ys - Y(:,end))
+swarm_end = [mean(xs), mean(ys)]
+g_final = g'
+
+m = 4;     
+N = 7;    
+
+% D5 Testing
+scores = zeros(N, 3);  
+for seed = 1:N
+    D = make_deployment(seed);
+    S1 = leaders_random(D.G, D.P0, D.faulty, D.g, m);
+    S2 = leaders_degree(D.G, D.P0, D.faulty, D.g, m);
+    S3 = leaders_closest(D.G, D.P0, D.faulty, D.g, m);
+    scores(seed,1) = score_mission(D, S1);
+    scores(seed,2) = score_mission(D, S2);
+    scores(seed,3) = score_mission(D, S3);
+end
+
+figure
+plot(1:N, scores, 'o-')
+xlabel('deployment seed'); ylabel('Score J (%)')
+
+title('Simple strategies on 20 practice deployments')
+
 
 %% ================= Functions (must be at the end) =================
 % T1 Broadcast (complete)
@@ -423,4 +446,31 @@ end
 
 % Score
 J = (100/T) * sum(1 - e_new ./ e_base);
+end
+
+% D5 Testing
+% S1: random working
+function S = leaders_random(G, P0, faulty, g, m)
+n = size(G,1);
+working = 1:n;
+working(faulty) = [];
+p = randperm(length(working));
+S = working(p(1:m));
+end
+
+% S2: highest-degree
+function S = leaders_degree(G, P0, faulty, g, m)
+n = size(G,1);
+d = G*ones(n,1);
+d(faulty) = -1;
+[~, order] = sort(d, 'descend');
+S = order(1:m)';
+end
+
+% S3: closest to g
+function S = leaders_closest(G, P0, faulty, g, m)
+dist2 = (P0(:,1) - g(1)).^2 + (P0(:,2) - g(2)).^2;
+dist2(faulty) = Inf;
+[~, order] = sort(dist2);
+S = order(1:m)';
 end
