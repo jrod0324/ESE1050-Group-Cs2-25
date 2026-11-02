@@ -23,7 +23,7 @@ function S = choose_leaders(G, P0, faulty, g, m)
 %       Helper functions are allowed, but put them in this file, below
 %       this function, so that this single file is all we need to run it.
 %
-%   Team: <Cs2-25> <The Resplendent Racers>
+%   Team: <team name>
 %   Members: <Rohan, Jordan, Siddarth>
 %
 %   Strategy (2-3 sentences describing your rule, in words):
@@ -43,16 +43,10 @@ working(faulty) = false;
 
 % Checks if any of the m coordinate pairs have a faulty robot in them. If
 % so, the program runs the function until all of the m pairs are not faulty.
-k = false;
-while (k == false)
-ranking = sortingCheck(G,P0,g,m);
-    if all(ranking) == 1
-        k = true;
-    end
-end
 
-S = ranking;   
-end
+S = sortingCheck(G,P0,g,m);
+    
+  
 
 
 % Calculates the number of degrees and distance to the rally point for each
@@ -60,7 +54,10 @@ end
 function[orderedIndices] = sortingCheck(G,P0,g,m)
 n = size(G, 1);
 degrees = (G*ones(n,1));
+degrees(faulty) = -1;
+
 distances = vecnorm(P0 - g, 2,2);
+
 
 robots = [distances,degrees]; 
 
