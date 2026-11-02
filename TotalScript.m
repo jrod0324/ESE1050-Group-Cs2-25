@@ -106,6 +106,20 @@ v = 1 + d;
 predA_star = [v'*x0, v'*y0] / sum(v);
 dist_from_avg = norm(predA_star - [mean(x0), mean(y0)])
 
+% D1: Steady State for simulate_anchored
+D  = make_deployment(1);
+n  = size(D.G,1);  d = D.G*ones(n,1);
+W  = diag(1./(1+d))*(eye(n)+D.G);
+x0 = D.P0(:,1);  y0 = D.P0(:,2);  g = D.g(:);
+
+lam = ones(n,1);  lam(D.faulty) = 0;
+xs = steady_state(W, lam, x0);
+ys = steady_state(W, lam, y0);
+X  = simulate_anchored(W, lam, x0, x0, 5000);
+Y  = simulate_anchored(W, lam, y0, y0, 5000);
+err = max(norm(xs - X(:,end)), norm(ys - Y(:,end)));
+fprintf(mean(xs), mean(ys), g(1), g(2))
+
 %% ================= Functions (must be at the end) =================
 % T1 Broadcast (complete)
 function G = make_complete(n)
@@ -302,6 +316,12 @@ for i = 1:K
 end
 
 end
+
+function ss = steady_state(W, lambda, a);
+Lam = diag(lambda);
+ss  = (eye(length(a)) - Lam*W) \ ((eye(length(a)) - Lam)*a);
+end
+
 
 %D2 The challenge
 function S = choose_leaders(G, P0, faulty, g, m)
